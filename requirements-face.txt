@@ -1,0 +1,5 @@
+# Aktifkan login wajah tanpa dlib / face_recognition / Visual C++ Build Tools
+-r requirements.txt
+numpy==1.26.4
+opencv-contrib-python==4.11.0.86
+mediapipe==0.10.21

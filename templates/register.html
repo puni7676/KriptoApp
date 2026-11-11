@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}Daftar{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-6 col-md-8">
+        <div class="card cyber-card">
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <i class="bi bi-person-plus-fill display-4 text-cyber-green"></i>
+                    <h3 class="mt-2 font-mono">Registrasi</h3>
+                    <p class="text-muted">Buat akun baru</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('auth.register') }}" id="registerForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="face_data" id="faceDataInput" value="">
+
+                    <div class="mb-3">
+                        <label for="username" class="form-label">
+                            <i class="bi bi-person me-1"></i> Username
+                        </label>
+                        <input type="text" class="form-control cyber-input" id="username" name="username"
+                               placeholder="Pilih username" required autofocus>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">
+                            <i class="bi bi-key me-1"></i> Password
+                        </label>
+                        <input type="password" class="form-control cyber-input" id="password" name="password"
+                               placeholder="Minimal 6 karakter" required minlength="6">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">
+                            <i class="bi bi-key-fill me-1"></i> Konfirmasi Password
+                        </label>
+                        <input type="password" class="form-control cyber-input" id="confirm_password" name="confirm_password"
+                               placeholder="Ulangi password" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Password akan di-hash menggunakan <strong class="text-cyber-cyan">bcrypt</strong> sebelum disimpan.
+                        </small>
+                    </div>
+
+                    <hr class="border-secondary">
+
+                    <!-- Face Capture Section -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-camera-fill me-1"></i> Registrasi Wajah (Opsional)
+                        </label>
+
+                        {% if face_available %}
+                        <div id="faceCaptureSection">
+                            <video id="regVideo" width="100%" class="rounded cyber-border mb-2" autoplay muted style="display:none;"></video>
+                            <canvas id="regCanvas" style="display:none;"></canvas>
+
+                            <div id="capturedPreview" style="display:none;" class="mb-2">
+                                <img id="capturedImage" class="rounded cyber-border" width="100%" alt="Captured face">
+                                <div class="text-center mt-1">
+                                    <span class="badge bg-success"><i class="bi bi-check me-1"></i>Wajah Terambil</span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-cyber flex-fill" onclick="startFaceCapture()">
+                                    <i class="bi bi-camera-video me-1"></i> Aktifkan Kamera
+                                </button>
+                                <button type="button" class="btn btn-cyber-cyan flex-fill" id="captureFaceBtn" style="display:none;" onclick="captureRegFace()">
+                                    <i class="bi bi-camera me-1"></i> Ambil Foto
+                                </button>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-warning cyber-alert py-2">
+                            <small>
+                                <i class="bi bi-exclamation-triangle me-1"></i>
+                                Modul deteksi dan verifikasi wajah belum terpasang. Anda masih bisa daftar tanpa biometrik.
+                            </small>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-cyber w-100 mt-3">
+                        <i class="bi bi-person-plus me-1"></i> Daftar Akun
+                    </button>
+                </form>
+
+                <hr class="border-secondary">
+
+                <div class="text-center">
+                    <small class="text-muted">
+                        Sudah punya akun?
+                        <a href="{{ url_for('auth.login') }}" class="text-cyber-green">Login di sini</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let regStream = null;
+
+function startFaceCapture() {
+    const video = document.getElementById('regVideo');
+    const captureBtn = document.getElementById('captureFaceBtn');
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function(stream) {
+            regStream = stream;
+            video.srcObject = stream;
+            video.style.display = 'block';
+            captureBtn.style.display = 'block';
+            document.getElementById('capturedPreview').style.display = 'none';
+        })
+        .catch(function(err) {
+            alert('Gagal mengakses kamera: ' + err.message);
+        });
+}
+
+function captureRegFace() {
+    const video = document.getElementById('regVideo');
+    const canvas = document.getElementById('regCanvas');
+    const preview = document.getElementById('capturedPreview');
+    const previewImg = document.getElementById('capturedImage');
+    const faceInput = document.getElementById('faceDataInput');
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+
+    const imageData = canvas.toDataURL('image/jpeg');
+    faceInput.value = imageData;
+
+    previewImg.src = imageData;
+    preview.style.display = 'block';
+    video.style.display = 'none';
+    document.getElementById('captureFaceBtn').style.display = 'none';
+
+    if (regStream) {
+        regStream.getTracks().forEach(t => t.stop());
+    }
+}
+</script>
+{% endblock %}

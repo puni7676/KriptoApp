@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Welcome Header -->
+        <div class="text-center mb-4">
+            <h2 class="font-mono text-cyber-green">
+                <i class="bi bi-shield-lock-fill me-2"></i>KriptoApp Dashboard
+            </h2>
+            {% if current_user.is_authenticated %}
+            <p class="text-muted">Selamat datang, <strong class="text-cyber-cyan">{{ current_user.username }}</strong>!</p>
+            {% else %}
+            <p class="text-muted">Aplikasi Kriptografi - Tugas Akhir</p>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-cyber">
+                <i class="bi bi-box-arrow-in-right me-1"></i> Login untuk Memulai
+            </a>
+            {% endif %}
+        </div>
+
+        {% if current_user.is_authenticated %}
+        <!-- Feature Cards -->
+        <div class="row g-4">
+            <!-- Super Encryption -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card cyber-card h-100 feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="bi bi-envelope-lock-fill display-4 text-cyber-green"></i>
+                        </div>
+                        <h5 class="font-mono">Super Enkripsi Pesan</h5>
+                        <p class="text-muted small">
+                            Enkripsi pesan dengan kombinasi algoritma klasik dan modern:
+                            <strong>Caesar + Vigenere + AES-256-CBC</strong>
+                        </p>
+                        <div class="mb-3">
+                            <span class="badge bg-cyber-green">Klasik</span>
+                            <span class="badge bg-cyber-cyan">Modern</span>
+                        </div>
+                        <a href="{{ url_for('messages.list_messages') }}" class="btn btn-outline-cyber w-100">
+                            <i class="bi bi-arrow-right me-1"></i> Buka Pesan
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Encryption -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card cyber-card h-100 feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="bi bi-file-earmark-lock-fill display-4 text-cyber-cyan"></i>
+                        </div>
+                        <h5 class="font-mono">Enkripsi File</h5>
+                        <p class="text-muted small">
+                            Enkripsi file menggunakan algoritma modern
+                            <strong>ChaCha20-Poly1305</strong> (berbeda dari enkripsi teks)
+                        </p>
+                        <div class="mb-3">
+                            <span class="badge bg-cyber-cyan">AEAD</span>
+                            <span class="badge bg-warning text-dark">Authenticated</span>
+                        </div>
+                        <a href="{{ url_for('files.list_files') }}" class="btn btn-outline-cyber w-100">
+                            <i class="bi bi-arrow-right me-1"></i> Buka File
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Steganography -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card cyber-card h-100 feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="bi bi-image-fill display-4 text-purple"></i>
+                        </div>
+                        <h5 class="font-mono">Steganografi</h5>
+                        <p class="text-muted small">
+                            Sembunyikan pesan di dalam gambar menggunakan teknik
+                            <strong>LSB (Least Significant Bit)</strong>
+                        </p>
+                        <div class="mb-3">
+                            <span class="badge bg-purple">LSB</span>
+                            <span class="badge bg-info">Data Hiding</span>
+                        </div>
+                        <a href="{{ url_for('stego.stego_page') }}" class="btn btn-outline-cyber w-100">
+                            <i class="bi bi-arrow-right me-1"></i> Buka Steganografi
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blockchain -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card cyber-card h-100 feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="bi bi-box-fill display-4 text-warning"></i>
+                        </div>
+                        <h5 class="font-mono">Blockchain</h5>
+                        <p class="text-muted small">
+                            Amankan aset digital dengan blockchain sederhana menggunakan
+                            <strong>SHA-256 hashing</strong>
+                        </p>
+                        <div class="mb-3">
+                            <span class="badge bg-warning text-dark">SHA-256</span>
+                            <span class="badge bg-danger">Proof of Work</span>
+                        </div>
+                        <a href="{{ url_for('blockchain.view_blockchain') }}" class="btn btn-outline-cyber w-100">
+                            <i class="bi bi-arrow-right me-1"></i> Buka Blockchain
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Database Encryption -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card cyber-card h-100 feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="bi bi-database-lock display-4 text-info"></i>
+                        </div>
+                        <h5 class="font-mono">Enkripsi Database</h5>
+                        <p class="text-muted small">
+                            Field penting di database dienkripsi menggunakan
+                            <strong>Fernet (AES-128-CBC + HMAC)</strong>
+                        </p>
+                        <div class="mb-3">
+                            <span class="badge bg-info">Fernet</span>
+                            <span class="badge bg-secondary">At-Rest Encryption</span>
+                        </div>
+                        <a href="{{ url_for('blockchain.list_assets') }}" class="btn btn-outline-cyber w-100">
+                            <i class="bi bi-arrow-right me-1"></i> Lihat Aset
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Info -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card cyber-card h-100 feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="bi bi-fingerprint display-4 text-success"></i>
+                        </div>
+                        <h5 class="font-mono">Autentikasi</h5>
+                        <p class="text-muted small">
+                            Login dengan <strong>password (bcrypt)</strong>, <strong>biometrik wajah</strong>,
+                            dan <strong>dongle USB</strong>
+                        </p>
+                        <div class="mb-3">
+                            <span class="badge bg-success">bcrypt</span>
+                            <span class="badge bg-primary">Face ID</span>
+                            <span class="badge bg-secondary">Dongle</span>
+                        </div>
+                        <button type="button" id="dongleCheckButton" class="btn btn-outline-cyber w-100"
+                                onclick="checkUsbDongle()">
+                            <i class="bi bi-usb-drive me-1"></i> Periksa Dongle USB
+                        </button>
+                        <div id="dongleStatus" class="small mt-2 {{ 'text-success' if dongle_status.active else 'text-warning' }}" aria-live="polite">
+                            <i class="bi {{ 'bi-check-circle-fill' if dongle_status.active else 'bi-exclamation-circle' }} me-1"></i>
+                            {{ dongle_status.message }}
+                        </div>
+                        <script>
+                        async function checkUsbDongle() {
+                            const button = document.getElementById('dongleCheckButton');
+                            const status = document.getElementById('dongleStatus');
+                            button.disabled = true;
+                            button.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Memeriksa...';
+                            try {
+                                const response = await fetch('{{ url_for("auth.dongle_status") }}', { cache: 'no-store' });
+                                const result = await response.json();
+                                status.className = 'small mt-2 ' + (result.active ? 'text-success' : 'text-warning');
+                                status.innerHTML = '<i class="bi ' + (result.active ? 'bi-check-circle-fill' : 'bi-exclamation-circle') + ' me-1"></i>' + result.message;
+                                button.innerHTML = '<i class="bi bi-arrow-repeat me-1"></i> Periksa Ulang Dongle';
+                            } catch (error) {
+                                status.className = 'small mt-2 text-danger';
+                                status.textContent = 'Gagal memeriksa dongle. Pastikan aplikasi berjalan.';
+                                button.innerHTML = '<i class="bi bi-arrow-repeat me-1"></i> Coba Lagi';
+                            } finally {
+                                button.disabled = false;
+                            }
+                        }
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Algorithm Summary -->
+        <div class="card cyber-card mt-4">
+            <div class="card-body">
+                <h5 class="font-mono text-cyber-green mb-3">
+                    <i class="bi bi-cpu me-1"></i> Ringkasan Algoritma
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Fitur</th>
+                                <th>Algoritma</th>
+                                <th>Tipe</th>
+                                <th>Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><i class="bi bi-key me-1 text-cyber-green"></i> Password</td>
+                                <td><code>bcrypt</code></td>
+                                <td><span class="badge bg-success">Hashing</span></td>
+                                <td>Adaptive hash function dengan salt</td>
+                            </tr>
+                            <tr>
+                                <td><i class="bi bi-envelope me-1 text-cyber-cyan"></i> Pesan Teks</td>
+                                <td><code>Caesar + Vigenere + AES-256-CBC</code></td>
+                                <td><span class="badge bg-cyber-green">Super Encryption</span></td>
+                                <td>Kombinasi klasik dan modern</td>
+                            </tr>
+                            <tr>
+                                <td><i class="bi bi-file-earmark me-1 text-warning"></i> File</td>
+                                <td><code>ChaCha20-Poly1305</code></td>
+                                <td><span class="badge bg-cyber-cyan">AEAD</span></td>
+                                <td>Authenticated encryption (berbeda dari teks)</td>
+                            </tr>
+                            <tr>
+                                <td><i class="bi bi-database me-1 text-info"></i> Database</td>
+                                <td><code>Fernet</code></td>
+                                <td><span class="badge bg-info">Symmetric</span></td>
+                                <td>Enkripsi field penting di SQLite</td>
+                            </tr>
+                            <tr>
+                                <td><i class="bi bi-image me-1 text-purple"></i> Steganografi</td>
+                                <td><code>LSB</code></td>
+                                <td><span class="badge bg-purple">Data Hiding</span></td>
+                                <td>Least Significant Bit embedding</td>
+                            </tr>
+                            <tr>
+                                <td><i class="bi bi-box me-1 text-danger"></i> Blockchain</td>
+                                <td><code>SHA-256</code></td>
+                                <td><span class="badge bg-danger">Hashing</span></td>
+                                <td>Proof of Work dengan difficulty 2</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

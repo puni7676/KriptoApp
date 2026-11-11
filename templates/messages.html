@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}Pesan Terenkripsi{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <h3 class="font-mono text-cyber-green mb-4">
+            <i class="bi bi-envelope-lock-fill me-2"></i>Pesan Terenkripsi
+        </h3>
+
+        <!-- Algorithm Info -->
+        <div class="alert alert-dark cyber-alert border-cyber-green mb-4">
+            <i class="bi bi-cpu me-1 text-cyber-cyan"></i>
+            <strong>Super Encryption:</strong>
+            Plaintext → <span class="badge bg-warning text-dark">Caesar (shift=7)</span> →
+            <span class="badge bg-info">Vigenere (key=KRIPTOGRAFI)</span> →
+            <span class="badge bg-danger">AES-256-CBC</span> →
+            <span class="badge bg-secondary">Fernet (DB Storage)</span>
+        </div>
+
+        <div class="row">
+            <!-- Send Message Form -->
+            <div class="col-lg-5 mb-4">
+                <div class="card cyber-card">
+                    <div class="card-header bg-transparent border-bottom border-secondary">
+                        <h5 class="font-mono text-cyber-cyan mb-0">
+                            <i class="bi bi-send-fill me-1"></i> Kirim Pesan
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ url_for('messages.send_message') }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                            <div class="mb-3">
+                                <label for="receiver_id" class="form-label">
+                                    <i class="bi bi-person me-1"></i> Penerima
+                                </label>
+                                <select class="form-select cyber-input" id="receiver_id" name="receiver_id" required>
+                                    <option value="">-- Pilih Penerima --</option>
+                                    {% for user in users %}
+                                    <option value="{{ user.id }}">{{ user.username }}</option>
+                                    {% endfor %}
+                                </select>
+                                {% if not users %}
+                                <small class="text-warning">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>
+                                    Belum ada pengguna lain. Daftarkan akun lain terlebih dahulu.
+                                </small>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="content" class="form-label">
+                                    <i class="bi bi-chat-text me-1"></i> Isi Pesan
+                                </label>
+                                <textarea class="form-control cyber-input" id="content" name="content"
+                                          rows="4" placeholder="Tulis pesan Anda..." required></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-cyber w-100">
+                                <i class="bi bi-send me-1"></i> Kirim dengan Super Encryption
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages List -->
+            <div class="col-lg-7">
+                <!-- Received Messages -->
+                <div class="card cyber-card mb-3">
+                    <div class="card-header bg-transparent border-bottom border-secondary">
+                        <h5 class="font-mono text-cyber-green mb-0">
+                            <i class="bi bi-inbox-fill me-1"></i> Pesan Masuk
+                            <span class="badge bg-cyber-green">{{ received|length }}</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if received %}
+                        <div class="list-group list-group-flush">
+                            {% for msg in received %}
+                            <a href="{{ url_for('messages.view_message', msg_id=msg.id) }}"
+                               class="list-group-item list-group-item-action bg-transparent border-secondary text-light">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong class="text-cyber-cyan">
+                                            <i class="bi bi-person me-1"></i>{{ msg.sender }}
+                                        </strong>
+                                        <p class="mb-1 small">{{ msg.content[:100] }}{% if msg.content|length > 100 %}...{% endif %}</p>
+                                        <small class="text-muted">
+                                            <i class="bi bi-lock me-1"></i>{{ msg.encryption_type }}
+                                        </small>
+                                    </div>
+                                    <small class="text-muted">{{ msg.timestamp.strftime('%d/%m/%Y %H:%M') }}</small>
+                                </div>
+                            </a>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p class="text-muted text-center mb-0">
+                            <i class="bi bi-inbox me-1"></i> Belum ada pesan masuk.
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Sent Messages -->
+                <div class="card cyber-card">
+                    <div class="card-header bg-transparent border-bottom border-secondary">
+                        <h5 class="font-mono text-cyber-cyan mb-0">
+                            <i class="bi bi-send-fill me-1"></i> Pesan Terkirim
+                            <span class="badge bg-cyber-cyan">{{ sent|length }}</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if sent %}
+                        <div class="list-group list-group-flush">
+                            {% for msg in sent %}
+                            <a href="{{ url_for('messages.view_message', msg_id=msg.id) }}"
+                               class="list-group-item list-group-item-action bg-transparent border-secondary text-light">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong class="text-warning">
+                                            <i class="bi bi-arrow-right me-1"></i>Kepada: {{ msg.receiver }}
+                                        </strong>
+                                        <p class="mb-1 small">{{ msg.content[:100] }}{% if msg.content|length > 100 %}...{% endif %}</p>
+                                        <small class="text-muted">
+                                            <i class="bi bi-lock me-1"></i>{{ msg.encryption_type }}
+                                        </small>
+                                    </div>
+                                    <small class="text-muted">{{ msg.timestamp.strftime('%d/%m/%Y %H:%M') }}</small>
+                                </div>
+                            </a>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p class="text-muted text-center mb-0">
+                            <i class="bi bi-send me-1"></i> Belum ada pesan terkirim.
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

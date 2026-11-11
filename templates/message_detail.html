@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% block title %}Detail Pesan #{{ msg.id }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="font-mono text-cyber-green mb-0">
+                <i class="bi bi-envelope-open-fill me-2"></i>Detail Pesan #{{ msg.id }}
+            </h3>
+            <a href="{{ url_for('messages.list_messages') }}" class="btn btn-outline-cyber">
+                <i class="bi bi-arrow-left me-1"></i> Kembali
+            </a>
+        </div>
+
+        <!-- Message Info -->
+        <div class="card cyber-card mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong class="text-cyber-cyan"><i class="bi bi-person me-1"></i> Pengirim:</strong> {{ msg.sender }}</p>
+                        <p><strong class="text-warning"><i class="bi bi-person-check me-1"></i> Penerima:</strong> {{ msg.receiver }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong class="text-muted"><i class="bi bi-clock me-1"></i> Waktu:</strong> {{ msg.timestamp.strftime('%d %B %Y, %H:%M:%S') }}</p>
+                        <p><strong class="text-muted"><i class="bi bi-lock me-1"></i> Metode:</strong> {{ msg.encryption_type }}</p>
+                    </div>
+                </div>
+                <hr class="border-secondary">
+                <h5 class="text-cyber-green"><i class="bi bi-chat-text me-1"></i> Pesan (Plaintext):</h5>
+                <div class="p-3 bg-dark rounded border border-secondary">
+                    <p class="mb-0 lead">{{ msg.plaintext }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Encryption Steps -->
+        <h4 class="font-mono text-cyber-cyan mb-3">
+            <i class="bi bi-diagram-3 me-1"></i> Langkah-langkah Enkripsi
+        </h4>
+
+        <div class="row g-3">
+            <!-- Step 0: Original -->
+            <div class="col-12">
+                <div class="card cyber-card border-success">
+                    <div class="card-header bg-transparent border-bottom border-success">
+                        <h6 class="font-mono text-success mb-0">
+                            <i class="bi bi-0-circle me-1"></i> Teks Asli (Plaintext)
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <code class="text-light fs-6">{{ msg.steps.original }}</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Arrow -->
+            <div class="col-12 text-center">
+                <i class="bi bi-arrow-down-circle-fill text-warning fs-3"></i>
+                <span class="badge bg-warning text-dark ms-2">Caesar Cipher (shift = 7)</span>
+            </div>
+
+            <!-- Step 1: After Caesar -->
+            <div class="col-12">
+                <div class="card cyber-card border-warning">
+                    <div class="card-header bg-transparent border-bottom border-warning">
+                        <h6 class="font-mono text-warning mb-0">
+                            <i class="bi bi-1-circle me-1"></i> Setelah Caesar Cipher (shift=7)
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <code class="text-light fs-6">{{ msg.steps.after_caesar }}</code>
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Setiap huruf digeser 7 posisi ke kanan dalam alfabet.
+                                A→H, B→I, C→J, dst.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Arrow -->
+            <div class="col-12 text-center">
+                <i class="bi bi-arrow-down-circle-fill text-info fs-3"></i>
+                <span class="badge bg-info ms-2">Vigenere Cipher (key = KRIPTOGRAFI)</span>
+            </div>
+
+            <!-- Step 2: After Vigenere -->
+            <div class="col-12">
+                <div class="card cyber-card border-info">
+                    <div class="card-header bg-transparent border-bottom border-info">
+                        <h6 class="font-mono text-info mb-0">
+                            <i class="bi bi-2-circle me-1"></i> Setelah Vigenere Cipher (key=KRIPTOGRAFI)
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <code class="text-light fs-6">{{ msg.steps.after_vigenere }}</code>
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Polyalphabetic substitution menggunakan kunci "KRIPTOGRAFI".
+                                Setiap huruf dienkripsi dengan shift berbeda sesuai karakter kunci.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Arrow -->
+            <div class="col-12 text-center">
+                <i class="bi bi-arrow-down-circle-fill text-danger fs-3"></i>
+                <span class="badge bg-danger ms-2">AES-256-CBC</span>
+            </div>
+
+            <!-- Step 3: After AES -->
+            <div class="col-12">
+                <div class="card cyber-card border-danger">
+                    <div class="card-header bg-transparent border-bottom border-danger">
+                        <h6 class="font-mono text-danger mb-0">
+                            <i class="bi bi-3-circle me-1"></i> Setelah AES-256-CBC
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <strong class="text-muted small">Ciphertext (Base64):</strong>
+                            <div class="bg-dark p-2 rounded mt-1" style="word-break: break-all;">
+                                <code class="text-danger small">{{ msg.steps.after_aes }}</code>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <strong class="text-muted small">IV (Base64):</strong>
+                                <div class="bg-dark p-2 rounded mt-1">
+                                    <code class="text-warning small">{{ msg.iv }}</code>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <strong class="text-muted small">AES Key (Base64):</strong>
+                                <div class="bg-dark p-2 rounded mt-1">
+                                    <code class="text-info small">{{ msg.aes_key }}</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle me-1"></i>
+                                AES-256 dalam mode CBC (Cipher Block Chaining) dengan padding PKCS7.
+                                Key 256-bit, IV 128-bit, keduanya di-generate secara random.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Arrow -->
+            <div class="col-12 text-center">
+                <i class="bi bi-arrow-down-circle-fill text-secondary fs-3"></i>
+                <span class="badge bg-secondary ms-2">Fernet (Database Storage)</span>
+            </div>
+
+            <!-- Step 4: DB Storage -->
+            <div class="col-12">
+                <div class="card cyber-card border-secondary">
+                    <div class="card-header bg-transparent border-bottom border-secondary">
+                        <h6 class="font-mono text-muted mb-0">
+                            <i class="bi bi-4-circle me-1"></i> Tersimpan di Database (Fernet Encrypted)
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="bg-dark p-2 rounded" style="word-break: break-all;">
+                            <code class="text-secondary small">{{ msg.steps.db_stored }}</code>
+                        </div>
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Seluruh data terenkripsi (ciphertext + IV + key) dibungkus lagi dengan
+                                Fernet encryption sebelum disimpan ke database SQLite.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

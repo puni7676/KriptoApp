@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-5 col-md-7">
+        <div class="card cyber-card">
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <i class="bi bi-shield-lock-fill display-4 text-cyber-green"></i>
+                    <h3 class="mt-2 font-mono">Login</h3>
+                    <p class="text-muted">Masuk ke sistem kriptografi</p>
+                </div>
+
+                <!-- Login Form -->
+                <form method="POST" action="{{ url_for('auth.login') }}" id="loginForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="mb-3">
+                        <label for="username" class="form-label">
+                            <i class="bi bi-person me-1"></i> Username
+                        </label>
+                        <input type="text" class="form-control cyber-input" id="username" name="username"
+                               placeholder="Masukkan username" required autofocus>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">
+                            <i class="bi bi-key me-1"></i> Password
+                        </label>
+                        <input type="password" class="form-control cyber-input" id="password" name="password"
+                               placeholder="Masukkan password" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Password di-hash menggunakan algoritma <strong class="text-cyber-cyan">bcrypt</strong>
+                        </small>
+                    </div>
+
+                    <button type="submit" class="btn btn-cyber w-100 mb-3">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Login dengan Password
+                    </button>
+                </form>
+
+                <hr class="border-secondary">
+
+                <!-- Face Recognition Login -->
+                <div class="text-center">
+                    <p class="text-muted mb-2">
+                        <i class="bi bi-camera-fill me-1"></i> Login Biometrik (Face Recognition)
+                    </p>
+
+                    {% if face_available %}
+                    <div id="faceLoginSection">
+                        <video id="loginVideo" width="100%" class="rounded cyber-border mb-2" autoplay muted style="display:none;"></video>
+                        <canvas id="loginCanvas" style="display:none;"></canvas>
+
+                        <button type="button" class="btn btn-outline-cyber w-100 mb-2" onclick="startFaceLogin()">
+                            <i class="bi bi-camera-video me-1"></i> Aktifkan Kamera
+                        </button>
+                        <button type="button" class="btn btn-cyber-cyan w-100" id="captureLoginBtn" style="display:none;" onclick="captureFaceLogin()">
+                            <i class="bi bi-person-bounding-box me-1"></i> Verifikasi Wajah
+                        </button>
+                        <div id="faceLoginStatus" class="mt-2"></div>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning cyber-alert py-2">
+                        <small>
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            Modul biometrik belum tersedia. Pasang dependensi pada <code>requirements-face.txt</code>.
+                        </small>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <hr class="border-secondary">
+
+                <div class="text-center">
+                    <small class="text-muted">
+                        Belum punya akun?
+                        <a href="{{ url_for('auth.register') }}" class="text-cyber-green">Daftar di sini</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Algorithm Info -->
+        <div class="card cyber-card mt-3">
+            <div class="card-body p-3">
+                <h6 class="font-mono text-cyber-cyan mb-2">
+                    <i class="bi bi-cpu me-1"></i> Algoritma yang Digunakan
+                </h6>
+                <ul class="list-unstyled mb-0 small">
+                    <li class="mb-1"><i class="bi bi-check2 text-cyber-green me-1"></i> <strong>bcrypt</strong> - Password hashing</li>
+                    <li class="mb-1"><i class="bi bi-check2 text-cyber-green me-1"></i> <strong>HMAC</strong> - Session token</li>
+                    <li><i class="bi bi-check2 text-cyber-green me-1"></i> <strong>Face Recognition</strong> - Autentikasi biometrik</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let loginStream = null;
+
+function startFaceLogin() {
+    const video = document.getElementById('loginVideo');
+    const captureBtn = document.getElementById('captureLoginBtn');
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function(stream) {
+            loginStream = stream;
+            video.srcObject = stream;
+            video.style.display = 'block';
+            captureBtn.style.display = 'block';
+        })
+        .catch(function(err) {
+            document.getElementById('faceLoginStatus').innerHTML =
+                '<div class="alert alert-danger py-1 small">Gagal mengakses kamera: ' + err.message + '</div>';
+        });
+}
+
+function captureFaceLogin() {
+    const video = document.getElementById('loginVideo');
+    const canvas = document.getElementById('loginCanvas');
+    const status = document.getElementById('faceLoginStatus');
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+
+    const imageData = canvas.toDataURL('image/jpeg');
+
+    status.innerHTML = '<div class="spinner-border spinner-border-sm text-cyber-green" role="status"></div> Memverifikasi wajah...';
+
+    fetch('{{ url_for("auth.verify_face") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ image: imageData })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            status.innerHTML = '<div class="alert alert-success py-1 small">' + data.message + '</div>';
+            if (loginStream) loginStream.getTracks().forEach(t => t.stop());
+            window.location.href = data.redirect;
+        } else {
+            status.innerHTML = '<div class="alert alert-danger py-1 small">' + data.message + '</div>';
+        }
+    })
+    .catch(err => {
+        status.innerHTML = '<div class="alert alert-danger py-1 small">Error: ' + err.message + '</div>';
+    });
+}
+</script>
+{% endblock %}

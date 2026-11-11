@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Registrasi Wajah{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+  <div class="col-lg-6 col-md-8">
+    <div class="card cyber-card">
+      <div class="card-body p-4">
+        <div class="text-center mb-3">
+          <i class="bi bi-fingerprint display-4 text-cyber-green"></i>
+          <h3 class="mt-2 font-mono">Daftarkan Wajah</h3>
+          <p class="text-muted">Akun: <strong>{{ current_user.username }}</strong></p>
+          <p class="small text-muted">Posisikan wajah di tengah kamera dengan pencahayaan cukup.</p>
+        </div>
+        <form method="POST" id="faceEnrollForm">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="face_data" id="faceDataInput">
+          <video id="enrollVideo" class="w-100 rounded cyber-border mb-2" autoplay muted playsinline style="display:none;"></video>
+          <canvas id="enrollCanvas" style="display:none;"></canvas>
+          <div id="enrollPreview" class="mb-2" style="display:none;">
+            <img id="enrollImage" class="w-100 rounded cyber-border" alt="Pratinjau wajah">
+            <div class="text-center mt-1"><span class="badge bg-success">Foto siap disimpan</span></div>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-cyber flex-fill" id="startCameraBtn">Aktifkan Kamera</button>
+            <button type="button" class="btn btn-cyber-cyan flex-fill" id="takePhotoBtn" disabled>Ambil Foto</button>
+          </div>
+          <div id="cameraStatus" class="small mt-2" aria-live="polite"></div>
+          <button type="submit" class="btn btn-cyber w-100 mt-3" id="saveFaceBtn" disabled>Simpan Data Wajah</button>
+        </form>
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary w-100 mt-2">Kembali ke Dashboard</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(() => {
+  let stream = null;
+  const video = document.getElementById('enrollVideo');
+  const canvas = document.getElementById('enrollCanvas');
+  const startBtn = document.getElementById('startCameraBtn');
+  const takeBtn = document.getElementById('takePhotoBtn');
+  const saveBtn = document.getElementById('saveFaceBtn');
+  const status = document.getElementById('cameraStatus');
+  const faceInput = document.getElementById('faceDataInput');
+  const preview = document.getElementById('enrollPreview');
+
+  startBtn.addEventListener('click', async () => {
+    try {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        throw new Error('Browser tidak mendukung kamera. Buka aplikasi melalui localhost atau HTTPS.');
+      }
+      stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: 'user'}});
+      video.srcObject = stream;
+      video.style.display = 'block';
+      preview.style.display = 'none';
+      takeBtn.disabled = false;
+      saveBtn.disabled = true;
+      status.textContent = 'Kamera aktif. Posisikan wajah lalu klik Ambil Foto.';
+    } catch (err) {
+      status.textContent = 'Kamera tidak dapat dibuka: ' + err.message;
+    }
+  });
+
+  takeBtn.addEventListener('click', () => {
+    if (!video.videoWidth || !video.videoHeight) {
+      status.textContent = 'Kamera belum siap. Tunggu sebentar lalu coba lagi.';
+      return;
+    }
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    const data = canvas.toDataURL('image/jpeg', 0.9);
+    faceInput.value = data;
+    document.getElementById('enrollImage').src = data;
+    preview.style.display = 'block';
+    video.style.display = 'none';
+    if (stream) stream.getTracks().forEach(track => track.stop());
+    stream = null;
+    takeBtn.disabled = true;
+    saveBtn.disabled = false;
+    status.textContent = 'Foto berhasil diambil. Klik Simpan Data Wajah.';
+  });
+
+  document.getElementById('faceEnrollForm').addEventListener('submit', (event) => {
+    if (!faceInput.value) {
+      event.preventDefault();
+      status.textContent = 'Ambil foto wajah sebelum menyimpan.';
+    }
+  });
+  window.addEventListener('beforeunload', () => {
+    if (stream) stream.getTracks().forEach(track => track.stop());
+  });
+})();
+</script>
+{% endblock %}

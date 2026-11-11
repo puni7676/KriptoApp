@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Dongle Diperlukan{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-lg-6 col-md-8">
+        <div class="card cyber-card border-danger">
+            <div class="card-body p-5 text-center">
+                <i class="bi bi-usb-drive-fill display-1 text-danger mb-3"></i>
+                <h2 class="font-mono text-danger">Dongle Tidak Terdeteksi</h2>
+                <p class="text-muted mt-3 mb-4">
+                    Aplikasi membutuhkan <strong>dongle keamanan</strong> (USB token) untuk dapat digunakan.
+                    Pastikan file <code>kripto_dongle.key</code> tersedia di USB drive atau direktori aplikasi.
+                </p>
+
+                <div class="card bg-dark border-secondary mb-4">
+                    <div class="card-body">
+                        <h6 class="font-mono text-cyber-cyan">
+                            <i class="bi bi-info-circle me-1"></i> Cara Mengaktifkan
+                        </h6>
+                        <ol class="text-start small text-muted mb-0">
+                            <li class="mb-1">Buat file bernama <code>kripto_dongle.key</code></li>
+                            <li class="mb-1">Isi file dengan: <code>KRIPTO-APP-AUTHORIZED-DONGLE-2024</code></li>
+                            <li class="mb-1">Simpan di USB drive atau direktori aplikasi</li>
+                            <li>Refresh halaman ini</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-center">
+                    <a href="{{ url_for('auth.create_dongle_page') }}" class="btn btn-cyber">
+                        <i class="bi bi-plus-circle me-1"></i> Buat Dongle (Testing)
+                    </a>
+                    <a href="{{ url_for('auth.dongle_required') }}" class="btn btn-outline-cyber">
+                        <i class="bi bi-arrow-clockwise me-1"></i> Refresh
+                    </a>
+                </div>
+
+                <div class="mt-4">
+                    <small class="text-muted font-mono">
+                        <i class="bi bi-shield-lock me-1"></i>
+                        Simulasi dongle untuk keamanan akses aplikasi
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

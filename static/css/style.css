@@ -1,0 +1,346 @@
+/* ============================================
+   KriptoApp - Cyber/Matrix Dark Theme
+   ============================================ */
+
+:root {
+    --cyber-green: #00ff41;
+    --cyber-green-dim: #00cc33;
+    --cyber-green-dark: #003300;
+    --cyber-cyan: #00d4ff;
+    --cyber-cyan-dim: #0099cc;
+    --cyber-purple: #bf00ff;
+    --cyber-bg: #0a0e17;
+    --cyber-bg-card: #111827;
+    --cyber-bg-input: #1a1f2e;
+    --cyber-border: #1e293b;
+    --cyber-text: #e2e8f0;
+    --cyber-text-muted: #94a3b8;
+}
+
+/* Global Styles */
+body {
+    background-color: var(--cyber-bg);
+    color: var(--cyber-text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+}
+
+.font-mono {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+/* Custom colors */
+.text-cyber-green { color: var(--cyber-green) !important; }
+.text-cyber-cyan { color: var(--cyber-cyan) !important; }
+.text-purple { color: var(--cyber-purple) !important; }
+
+.bg-cyber-green { background-color: var(--cyber-green-dim) !important; color: #000 !important; }
+.bg-cyber-cyan { background-color: var(--cyber-cyan-dim) !important; color: #000 !important; }
+.bg-purple { background-color: var(--cyber-purple) !important; }
+
+.border-cyber-green { border-color: var(--cyber-green) !important; }
+.border-purple { border-color: var(--cyber-purple) !important; }
+
+/* Navbar */
+.cyber-navbar {
+    background-color: rgba(10, 14, 23, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--cyber-green-dark);
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.1);
+}
+
+.cyber-navbar .navbar-brand {
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1px;
+}
+
+.cyber-navbar .nav-link {
+    transition: all 0.3s ease;
+    border-radius: 4px;
+    margin: 0 2px;
+}
+
+.cyber-navbar .nav-link:hover {
+    background-color: rgba(0, 255, 65, 0.1);
+    color: var(--cyber-green) !important;
+}
+
+/* Cards */
+.cyber-card {
+    background-color: var(--cyber-bg-card);
+    border: 1px solid var(--cyber-border);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.cyber-card:hover {
+    border-color: rgba(0, 255, 65, 0.3);
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.05);
+}
+
+/* Feature cards on dashboard */
+.feature-card {
+    cursor: default;
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 255, 65, 0.15);
+}
+
+.feature-card .feature-icon {
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.1);
+}
+
+/* Inputs */
+.cyber-input {
+    background-color: var(--cyber-bg-input) !important;
+    border: 1px solid var(--cyber-border) !important;
+    color: var(--cyber-text) !important;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.cyber-input:focus {
+    border-color: var(--cyber-green) !important;
+    box-shadow: 0 0 0 0.2rem rgba(0, 255, 65, 0.15) !important;
+    background-color: var(--cyber-bg-input) !important;
+}
+
+.cyber-input::placeholder {
+    color: var(--cyber-text-muted) !important;
+    opacity: 0.6;
+}
+
+/* Buttons */
+.btn-cyber {
+    background: linear-gradient(135deg, var(--cyber-green-dim), var(--cyber-green));
+    border: none;
+    color: #000;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 8px 20px;
+    transition: all 0.3s ease;
+    text-shadow: none;
+}
+
+.btn-cyber:hover {
+    background: linear-gradient(135deg, var(--cyber-green), #33ff66);
+    color: #000;
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
+    transform: translateY(-1px);
+}
+
+.btn-cyber:active {
+    transform: translateY(0);
+}
+
+.btn-outline-cyber {
+    border: 1px solid var(--cyber-green);
+    color: var(--cyber-green);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-cyber:hover {
+    background-color: var(--cyber-green);
+    color: #000;
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+}
+
+.btn-cyber-cyan {
+    background: linear-gradient(135deg, var(--cyber-cyan-dim), var(--cyber-cyan));
+    border: none;
+    color: #000;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-cyber-cyan:hover {
+    background: linear-gradient(135deg, var(--cyber-cyan), #33ddff);
+    color: #000;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+}
+
+/* Alerts */
+.cyber-alert {
+    border-radius: 8px;
+    border-left-width: 4px;
+}
+
+/* Tables */
+.table-dark {
+    --bs-table-bg: transparent;
+    --bs-table-hover-bg: rgba(0, 255, 65, 0.05);
+}
+
+.table-dark th {
+    border-bottom-color: var(--cyber-border);
+    color: var(--cyber-cyan);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table-dark td {
+    border-bottom-color: var(--cyber-border);
+    vertical-align: middle;
+}
+
+/* Blockchain specific */
+.block-card {
+    position: relative;
+}
+
+.genesis-block {
+    border-color: rgba(255, 193, 7, 0.5) !important;
+}
+
+.genesis-block:hover {
+    box-shadow: 0 0 20px rgba(255, 193, 7, 0.2);
+}
+
+.blockchain-chain .block-card::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Progress bar */
+.cyber-progress {
+    background-color: var(--cyber-bg-input);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.cyber-progress .progress-bar {
+    background: linear-gradient(90deg, var(--cyber-green-dim), var(--cyber-green));
+}
+
+/* Video/Camera elements */
+.cyber-border {
+    border: 2px solid var(--cyber-border);
+}
+
+video.cyber-border {
+    border-color: var(--cyber-cyan);
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+}
+
+/* Badge improvements */
+.badge {
+    font-weight: 500;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+}
+
+/* Code elements */
+code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+}
+
+/* List group for messages */
+.list-group-item {
+    transition: all 0.2s ease;
+}
+
+.list-group-item:hover {
+    background-color: rgba(0, 255, 65, 0.05) !important;
+    border-left: 3px solid var(--cyber-green);
+}
+
+/* Form select styling */
+.form-select.cyber-input {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2300ff41' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+
+/* Footer */
+footer {
+    border-color: var(--cyber-border) !important;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--cyber-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--cyber-border);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--cyber-green-dim);
+}
+
+/* Dropdown menu */
+.dropdown-menu-dark {
+    background-color: var(--cyber-bg-card);
+    border: 1px solid var(--cyber-border);
+}
+
+.dropdown-menu-dark .dropdown-item {
+    color: var(--cyber-text);
+    transition: all 0.2s ease;
+}
+
+.dropdown-menu-dark .dropdown-item:hover {
+    background-color: rgba(0, 255, 65, 0.1);
+    color: var(--cyber-green);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .feature-card:hover {
+        transform: none;
+    }
+
+    .navbar-nav {
+        padding: 10px 0;
+    }
+
+    .blockchain-chain .block-card {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+/* Animation for page load */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.cyber-card {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* Glowing text effect for headings */
+.text-cyber-green {
+    text-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+}
+
+/* Selection color */
+::selection {
+    background: rgba(0, 255, 65, 0.3);
+    color: #fff;
+}

@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block title %}Enkripsi File{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <h3 class="font-mono text-cyber-green mb-4">
+            <i class="bi bi-file-earmark-lock-fill me-2"></i>Enkripsi File
+        </h3>
+
+        <!-- Algorithm Info -->
+        <div class="alert alert-dark cyber-alert border-cyber-cyan mb-4">
+            <i class="bi bi-cpu me-1 text-cyber-cyan"></i>
+            <strong>Algoritma:</strong>
+            <span class="badge bg-cyber-cyan">ChaCha20-Poly1305</span>
+            — AEAD (Authenticated Encryption with Associated Data).
+            <br>
+            <small class="text-muted">
+                <i class="bi bi-info-circle me-1"></i>
+                Berbeda dari enkripsi pesan (AES-256-CBC). ChaCha20 lebih cepat pada perangkat tanpa hardware AES.
+                Poly1305 menjamin integritas data (authenticated).
+            </small>
+        </div>
+
+        <div class="row">
+            <!-- Upload Form -->
+            <div class="col-lg-5 mb-4">
+                <div class="card cyber-card">
+                    <div class="card-header bg-transparent border-bottom border-secondary">
+                        <h5 class="font-mono text-cyber-cyan mb-0">
+                            <i class="bi bi-upload me-1"></i> Upload & Enkripsi File
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ url_for('files.upload_file') }}" enctype="multipart/form-data" id="uploadForm">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                            <div class="mb-3">
+                                <label for="file" class="form-label">
+                                    <i class="bi bi-file-earmark-plus me-1"></i> Pilih File
+                                </label>
+                                <input type="file" class="form-control cyber-input" id="file" name="file" required
+                                       accept=".txt,.pdf,.png,.jpg,.jpeg,.gif,.doc,.docx,.xls,.xlsx,.zip,.csv">
+                                <small class="text-muted">
+                                    Maksimal 16MB. Format: txt, pdf, png, jpg, doc, xls, zip, csv
+                                </small>
+                            </div>
+
+                            <div id="fileInfo" style="display:none;" class="mb-3">
+                                <div class="card bg-dark border-secondary">
+                                    <div class="card-body py-2">
+                                        <small>
+                                            <i class="bi bi-file-earmark me-1 text-cyber-green"></i>
+                                            <span id="fileName"></span>
+                                            <br>
+                                            <i class="bi bi-hdd me-1 text-muted"></i>
+                                            <span id="fileSize" class="text-muted"></span>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-cyber w-100" id="uploadBtn">
+                                <i class="bi bi-lock me-1"></i> Enkripsi & Upload
+                            </button>
+
+                            <div id="uploadProgress" style="display:none;" class="mt-2">
+                                <div class="progress cyber-progress">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-cyber-green"
+                                         role="progressbar" style="width: 100%">Mengenkripsi...</div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Encryption Details -->
+                <div class="card cyber-card mt-3">
+                    <div class="card-body">
+                        <h6 class="font-mono text-cyber-cyan mb-2">
+                            <i class="bi bi-gear me-1"></i> Detail ChaCha20-Poly1305
+                        </h6>
+                        <ul class="list-unstyled mb-0 small text-muted">
+                            <li class="mb-1"><i class="bi bi-check2 text-cyber-green me-1"></i> Key: 256-bit (random)</li>
+                            <li class="mb-1"><i class="bi bi-check2 text-cyber-green me-1"></i> Nonce: 96-bit (random)</li>
+                            <li class="mb-1"><i class="bi bi-check2 text-cyber-green me-1"></i> Tag: 128-bit (authentication)</li>
+                            <li class="mb-1"><i class="bi bi-check2 text-cyber-green me-1"></i> Key disimpan di DB (Fernet encrypted)</li>
+                            <li><i class="bi bi-check2 text-cyber-green me-1"></i> File terenkripsi disimpan di disk</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Files List -->
+            <div class="col-lg-7">
+                <div class="card cyber-card">
+                    <div class="card-header bg-transparent border-bottom border-secondary">
+                        <h5 class="font-mono text-cyber-green mb-0">
+                            <i class="bi bi-folder-fill me-1"></i> File Terenkripsi
+                            <span class="badge bg-cyber-green">{{ files|length }}</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if files %}
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Nama File</th>
+                                        <th>Ukuran</th>
+                                        <th>Waktu</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for file in files %}
+                                    <tr>
+                                        <td>
+                                            <i class="bi bi-file-earmark-lock text-cyber-cyan me-1"></i>
+                                            {{ file.original_filename }}
+                                        </td>
+                                        <td class="text-muted">
+                                            {% if file.file_size >= 1048576 %}
+                                                {{ "%.1f"|format(file.file_size / 1048576) }} MB
+                                            {% elif file.file_size >= 1024 %}
+                                                {{ "%.1f"|format(file.file_size / 1024) }} KB
+                                            {% else %}
+                                                {{ file.file_size }} B
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-muted small">{{ file.timestamp.strftime('%d/%m/%Y %H:%M') }}</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{{ url_for('files.download_file', file_id=file.id) }}"
+                                                   class="btn btn-outline-cyber" title="Download (Dekripsi)">
+                                                    <i class="bi bi-download"></i>
+                                                </a>
+                                                <form method="POST" action="{{ url_for('files.delete_file', file_id=file.id) }}"
+                                                      style="display:inline;" onsubmit="return confirm('Hapus file ini?')">
+                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                    <button type="submit" class="btn btn-outline-danger" title="Hapus">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <p class="text-muted text-center mb-0">
+                            <i class="bi bi-folder me-1"></i> Belum ada file terenkripsi.
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('file').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const fileInfo = document.getElementById('fileInfo');
+    if (file) {
+        document.getElementById('fileName').textContent = file.name;
+        let size = file.size;
+        if (size >= 1048576) {
+            document.getElementById('fileSize').textContent = (size / 1048576).toFixed(1) + ' MB';
+        } else if (size >= 1024) {
+            document.getElementById('fileSize').textContent = (size / 1024).toFixed(1) + ' KB';
+        } else {
+            document.getElementById('fileSize').textContent = size + ' bytes';
+        }
+        fileInfo.style.display = 'block';
+    } else {
+        fileInfo.style.display = 'none';
+    }
+});
+
+document.getElementById('uploadForm').addEventListener('submit', function() {
+    document.getElementById('uploadBtn').disabled = true;
+    document.getElementById('uploadBtn').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Mengenkripsi...';
+    document.getElementById('uploadProgress').style.display = 'block';
+});
+</script>
+{% endblock %}
