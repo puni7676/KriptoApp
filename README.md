@@ -6,8 +6,8 @@ KriptoApp adalah aplikasi keamanan informasi yang mengintegrasikan kriptografi, 
 
 ## Identitas Kelompok
 
-**Mata Kuliah:** Kriptografi  
 **Kelas:** IF-D
+**Program Studi:** Informatika  
 
 ### Anggota Kelompok
 
